@@ -1,0 +1,27 @@
+package model.values;
+
+import model.types.IntType;
+
+public class IntValue implements IValue {
+
+    private final int _value;
+
+    public IntValue(int value) {
+        _value = value;
+    }
+
+    @Override
+    public String toString() {
+        return Integer.toString(_value);
+    }
+
+    public int getValue() { return _value; }
+
+    @Override
+    public IntType getType() { return IntType.get(); }
+
+    @Override
+    public IntValue deepCopy() {
+        return new IntValue(_value);
+    }
+}

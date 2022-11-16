@@ -35,6 +35,11 @@ public class MyDictionary<TKey, TValue> implements MyIDictionary<TKey, TValue> {
     }
 
     @Override
+    public void remove(TKey key) {
+        _items.remove(key);
+    }
+
+    @Override
     public ArrayList<Map.Entry<TKey, TValue>> toArrayList() {
         var result = new ArrayList<Map.Entry<TKey, TValue>>();
         for (var entry : _items.entrySet())

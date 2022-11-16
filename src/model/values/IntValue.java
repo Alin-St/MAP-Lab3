@@ -24,4 +24,9 @@ public class IntValue implements IValue {
     public IntValue deepCopy() {
         return new IntValue(_value);
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof IntValue other && _value == other._value;
+    }
 }

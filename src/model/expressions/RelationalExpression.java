@@ -3,16 +3,17 @@ package model.expressions;
 import model.exceptions.ExpressionEvaluationException;
 import model.types.IntType;
 import model.utility.MyIDictionary;
+import model.values.BoolValue;
 import model.values.IValue;
 import model.values.IntValue;
 
-public class ArithmeticExpression implements IExpression {
+public class RelationalExpression implements IExpression {
 
     private final IExpression _leftOperand;
     private final IExpression _rightOperand;
-    private final ArithmeticOperator _operator;
+    private final RelationalOperator _operator;
 
-    public ArithmeticExpression(IExpression leftOperand, IExpression rightOperand, ArithmeticOperator operator) {
+    public RelationalExpression(IExpression leftOperand, IExpression rightOperand, RelationalOperator operator) {
         _leftOperand = leftOperand;
         _rightOperand = rightOperand;
         _operator = operator;
@@ -24,10 +25,12 @@ public class ArithmeticExpression implements IExpression {
                 _leftOperand.toString() :
                 "(" + _leftOperand + ")";
         var op_str = switch (_operator) {
-            case ADDITION -> "+";
-            case SUBTRACTION -> "-";
-            case MULTIPLICATION -> "*";
-            case DIVISION -> "/";
+            case LESS_THAN -> "<";
+            case LESS_OR_EQUAL -> "<=";
+            case EQUALS -> "==";
+            case NOT_EQUALS -> "!=";
+            case GREATER_THAN -> ">";
+            case GREATER_OR_EQUAL -> ">=";
         };
         var ro_str = (_rightOperand instanceof ValueExpression || _rightOperand instanceof VariableExpression) ?
                 _rightOperand.toString() :
@@ -49,29 +52,18 @@ public class ArithmeticExpression implements IExpression {
         int v1 = ((IntValue)leftValue).getValue();
         int v2 = ((IntValue)rightValue).getValue();
 
-        switch (_operator)
-        {
-            case ADDITION:
-                return new IntValue(v1 + v2);
-
-            case SUBTRACTION:
-                return new IntValue(v1 - v2);
-
-            case MULTIPLICATION:
-                return new IntValue(v1 * v2);
-
-            case DIVISION:
-                if (v2 == 0)
-                    throw new ExpressionEvaluationException("Division by zero ('" + this + "').");
-                return new IntValue(v1 / v2);
-
-            default:
-                throw new ExpressionEvaluationException("Unknown arithmetic operation.");
-        }
+        return switch (_operator) {
+            case LESS_THAN -> new BoolValue(v1 < v2);
+            case LESS_OR_EQUAL -> new BoolValue(v1 <= v2);
+            case EQUALS -> new BoolValue(v1 == v2);
+            case NOT_EQUALS -> new BoolValue(v1 != v2);
+            case GREATER_THAN -> new BoolValue(v1 > v2);
+            case GREATER_OR_EQUAL -> new BoolValue(v1 >= v2);
+        };
     }
 
     @Override
-    public ArithmeticExpression deepCopy() {
-        return new ArithmeticExpression(_leftOperand.deepCopy(), _rightOperand.deepCopy(), _operator);
+    public RelationalExpression deepCopy() {
+        return new RelationalExpression(_leftOperand.deepCopy(), _rightOperand.deepCopy(), _operator);
     }
 }

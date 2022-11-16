@@ -1,8 +1,5 @@
-package view;
-
 import controller.Controller;
 import model.ProgramState;
-import model.exceptions.InterpreterException;
 import model.expressions.*;
 import model.statements.*;
 import model.types.BoolType;
@@ -11,101 +8,30 @@ import model.types.StringType;
 import model.values.BoolValue;
 import model.values.IntValue;
 import model.values.StringValue;
+import repository.IRepository;
+import repository.Repository;
+import view.TextMenu;
+import view.commands.ExitCommand;
+import view.commands.RunExample;
 
-import java.util.Scanner;
+public class Interpreter {
 
-public class View {
+    @SuppressWarnings({"DuplicatedCode", "SpellCheckingInspection"})
+    public static void main(String[] args) {
 
-    private final Controller _controller;
-
-    public View(Controller controller) {
-        _controller = controller;
-    }
-
-    public void run() throws InterpreterException {
-        while (true)
-        {
-            String npl = _controller.getRepository().getCurrentProgram() == null ? " (no program loaded)" : "";
-
-            System.out.println(
-                    "1. Input a program.\n" +
-                    "2. Run program" + npl + ".\n" +
-                    "0. Exit.\n");
-
-            int cmd = readInt("Enter a command: ");
-
-            try {
-                if (cmd == 1)
-                    inputProgram();
-                else if (cmd == 2)
-                    runProgram();
-                else if (cmd == 0)
-                    break;
-                else
-                    System.out.println("Unknown command.");
-            } catch (Exception e) {
-                System.out.println("Error: " + e + "\n");
-            }
-        }
-
-        System.out.println("Program closed.");
-    }
-
-    public void inputProgram() {
-        System.out.println("1. Program 1:\n" + TIProgram1().toString().indent(4) + "\n" +
-                "2. Program 2:\n" + TIProgram2().toString().indent(4) +  "\n" +
-                "3. Program 3:\n" + TIProgram3().toString().indent(4) + "\n" +
-                "4. Program 4:\n" + TIProgram4().toString().indent(4) + "\n" +
-                "0. Exit");
-        int cmd = readInt("Choose a program: ");
-
-        if (cmd == 1)
-            _controller.getRepository().setCurrentProgram(TIProgram1());
-        else if (cmd == 2)
-            _controller.getRepository().setCurrentProgram(TIProgram2());
-        else if (cmd == 3)
-            _controller.getRepository().setCurrentProgram(TIProgram3());
-        else if (cmd == 4)
-            _controller.getRepository().setCurrentProgram(TIProgram4());
-        else {
-            if (cmd != 0)
-                System.out.println("Unknown command.\n");
-            return;
-        }
-
-        System.out.println("Program loaded successfully.\n");
-    }
-
-    public void runProgram() throws InterpreterException {
-
-        if (_controller.getRepository().getCurrentProgram() == null) {
-            System.out.println("No program loaded.");
-            return;
-        }
-
-        _controller.setDisplayFlag(true);
-        _controller.allSteps();
-    }
-
-    int readInt(String prompt) {
-        System.out.print(prompt);
-        String s = new Scanner(System.in).nextLine();
-        return Integer.parseInt(s);
-    }
-
-    ProgramState TIProgram1() {
-        IStatement mainStatement = new CompoundStatement(
+        IStatement ex1 = new CompoundStatement(
                 new VariableDeclarationStatement("v", IntType.get()),
                 new CompoundStatement(
                         new AssignmentStatement("v", new ValueExpression(new IntValue(2))),
                         new PrintStatement(new VariableExpression("v"))
                 )
         );
-        return new ProgramState(mainStatement);
-    }
+        ProgramState prg1 = new ProgramState(ex1);
+        IRepository repo1 = new Repository("log1.txt");
+        repo1.setCurrentProgram(prg1);
+        Controller ctr1 = new Controller(repo1);
 
-    ProgramState TIProgram2() {
-        IStatement mainStatement = new CompoundStatement(
+        IStatement ex2 = new CompoundStatement(
                 new VariableDeclarationStatement("a", IntType.get()),
                 new CompoundStatement(
                         new VariableDeclarationStatement("b", IntType.get()),
@@ -130,11 +56,12 @@ public class View {
                         )
                 )
         );
-        return new ProgramState(mainStatement);
-    }
+        ProgramState prg2 = new ProgramState(ex2);
+        IRepository repo2 = new Repository("log2.txt");
+        repo2.setCurrentProgram(prg2);
+        Controller ctr2 = new Controller(repo2);
 
-    ProgramState TIProgram3() {
-        IStatement mainStatement = new CompoundStatement(
+        IStatement ex3 = new CompoundStatement(
                 new VariableDeclarationStatement("a", BoolType.get()),
                 new CompoundStatement(
                         new VariableDeclarationStatement("v", IntType.get()),
@@ -151,12 +78,12 @@ public class View {
                         )
                 )
         );
-        return new ProgramState(mainStatement);
-    }
+        ProgramState prg3 = new ProgramState(ex3);
+        IRepository repo3 = new Repository("log3.txt");
+        repo3.setCurrentProgram(prg3);
+        Controller ctr3 = new Controller(repo3);
 
-    @SuppressWarnings("SpellCheckingInspection")
-    ProgramState TIProgram4() {
-        IStatement mainStatement = new CompoundStatement(
+        IStatement ex4 = new CompoundStatement(
                 new VariableDeclarationStatement("varf", StringType.get()),
                 new CompoundStatement(
                         new AssignmentStatement("varf", new ValueExpression(new StringValue("test.in"))),
@@ -181,6 +108,49 @@ public class View {
                         )
                 )
         );
-        return new ProgramState(mainStatement);
+        ProgramState prg4 = new ProgramState(ex4);
+        IRepository repo4 = new Repository("log4.txt");
+        repo4.setCurrentProgram(prg4);
+        Controller ctr4 = new Controller(repo4);
+
+        IStatement ex5 = new CompoundStatement(
+                new CompoundStatement(
+                        new PrintStatement(new RelationalExpression(
+                                new ValueExpression(new IntValue(4)),
+                                new ValueExpression(new IntValue(4)),
+                                RelationalOperator.NOT_EQUALS
+                        )),
+                        new PrintStatement(new RelationalExpression(
+                                new ValueExpression(new IntValue(4)),
+                                new ValueExpression(new IntValue(5)),
+                                RelationalOperator.NOT_EQUALS
+                        ))
+                ),
+                new CompoundStatement(
+                        new PrintStatement(new RelationalExpression(
+                                new ValueExpression(new IntValue(4)),
+                                new ValueExpression(new IntValue(4)),
+                                RelationalOperator.LESS_THAN
+                        )),
+                        new PrintStatement(new RelationalExpression(
+                                new ValueExpression(new IntValue(4)),
+                                new ValueExpression(new IntValue(5)),
+                                RelationalOperator.LESS_THAN
+                        ))
+                )
+        );
+        ProgramState prg5 = new ProgramState(ex5);
+        IRepository repo5 = new Repository("log5.txt");
+        repo5.setCurrentProgram(prg5);
+        Controller ctr5 = new Controller(repo5);
+
+        var menu = new TextMenu();
+        menu.addCommand(new ExitCommand("0", "exit"));
+        menu.addCommand(new RunExample("1", ex1.toString(), ctr1));
+        menu.addCommand(new RunExample("2", ex2.toString(), ctr2));
+        menu.addCommand(new RunExample("3", ex3.toString(), ctr3));
+        menu.addCommand(new RunExample("4", ex4.toString(), ctr4));
+        menu.addCommand(new RunExample("5", ex5.toString(), ctr5));
+        menu.show();
     }
 }

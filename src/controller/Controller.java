@@ -35,11 +35,13 @@ public class Controller {
         ProgramState state = _repository.getCurrentProgram();
         if (_displayFlag)
             System.out.println("Initial program state:\n" + state.toString().indent(4));
+        _repository.logProgramState();
 
         while (!state.getExecutionStack().empty()) {
             state = oneStep(state);
             if (_displayFlag)
                 System.out.println("Current program state:\n" + state.toString().indent(4));
+            _repository.logProgramState();
         }
     }
 }

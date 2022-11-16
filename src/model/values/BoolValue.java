@@ -24,4 +24,9 @@ public class BoolValue implements IValue {
     public BoolValue deepCopy() {
         return new BoolValue(_value);
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof BoolValue other && _value == other._value;
+    }
 }

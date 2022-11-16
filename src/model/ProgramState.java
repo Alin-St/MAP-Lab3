@@ -4,23 +4,30 @@ import model.exceptions.InterpreterException;
 import model.statements.IStatement;
 import model.utility.*;
 import model.values.IValue;
+import model.values.StringValue;
+
+import java.io.BufferedReader;
 
 public class ProgramState implements IDeepCopyable {
 
     private MyIStack<IStatement> _stack;
     private MyIDictionary<String, IValue> _symbolTable;
     private MyIList<IValue> _output;
+    private MyIDictionary<StringValue, BufferedReader> _fileTable;
 
-    public ProgramState(MyIStack<IStatement> stack, MyIDictionary<String, IValue> symbolTable, MyIList<IValue> output) {
+    public ProgramState(MyIStack<IStatement> stack, MyIDictionary<String, IValue> symbolTable, MyIList<IValue> output,
+                        MyIDictionary<StringValue, BufferedReader> fileTable) {
         _stack = stack;
         _symbolTable = symbolTable;
         _output = output;
+        _fileTable = fileTable;
     }
 
     public ProgramState(IStatement mainStatement) {
         this(new MyStack<>(IStatement.class, mainStatement),
                 new MyDictionary<>(String.class, IValue.class),
-                new MyList<>(IValue.class));
+                new MyList<>(IValue.class),
+                new MyDictionary<>(StringValue.class, BufferedReader.class));
     }
 
     public MyIStack<IStatement> getExecutionStack() { return _stack; }
@@ -32,6 +39,9 @@ public class ProgramState implements IDeepCopyable {
     public MyIList<IValue> getOutputStructure() { return _output; }
     public void setOutputStructure(MyIList<IValue> value) { _output = value; }
 
+    public MyIDictionary<StringValue, BufferedReader> getFileTable() { return _fileTable; }
+    public void setFileTable(MyIDictionary<StringValue, BufferedReader> value) { _fileTable = value; }
+
     @Override
     public String toString() {
         return "Execution Stack:\n" +
@@ -39,12 +49,14 @@ public class ProgramState implements IDeepCopyable {
                 "Symbol Table:\n" +
                 symbolTableToString(_symbolTable).indent(4) +
                 "Output:\n" +
-                outputDataToString(_output).indent(4);
+                outputDataToString(_output).indent(4) +
+                "File Table:\n" +
+                fileTableToString(_fileTable).indent(4);
     }
 
     @Override
     public ProgramState deepCopy() throws InterpreterException {
-        return new ProgramState(_stack.deepCopy(), _symbolTable.deepCopy(), _output.deepCopy());
+        return new ProgramState(_stack.deepCopy(), _symbolTable.deepCopy(), _output.deepCopy(), _fileTable.deepCopy());
     }
 
     public static String executionStackToString(MyIStack<IStatement> stack) {
@@ -85,6 +97,18 @@ public class ProgramState implements IDeepCopyable {
         }
         if (result.isEmpty())
             return "No output data.";
+        return result.toString();
+    }
+
+    public static String fileTableToString(MyIDictionary<StringValue, BufferedReader> table) {
+        var result = new StringBuilder();
+        for (var entry : table.toArrayList()) {
+            if (!result.isEmpty())
+                result.append("\n");
+            result.append(entry.getKey());
+        }
+        if (result.isEmpty())
+            return "No file descriptor.";
         return result.toString();
     }
 }

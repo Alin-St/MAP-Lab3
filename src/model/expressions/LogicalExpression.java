@@ -2,7 +2,6 @@ package model.expressions;
 
 import model.exceptions.ExpressionEvaluationException;
 import model.types.BoolType;
-import model.types.IntType;
 import model.utility.MyIDictionary;
 import model.values.BoolValue;
 import model.values.IValue;

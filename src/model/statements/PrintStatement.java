@@ -1,6 +1,6 @@
 package model.statements;
 
-import model.ProgramState;
+import model.programState.ProgramState;
 import model.exceptions.ExpressionEvaluationException;
 import model.expressions.IExpression;
 
@@ -19,7 +19,7 @@ public class PrintStatement implements IStatement {
     public ProgramState execute(ProgramState state) throws ExpressionEvaluationException {
         var output = state.getOutputStructure();
         var symbolTable = state.getSymbolTable();
-        output.add(_expression.evaluate(symbolTable));
+        output.add(_expression.evaluate(symbolTable, state.getHeapTable()));
         return state;
     }
 

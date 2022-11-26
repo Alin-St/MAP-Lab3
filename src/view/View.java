@@ -1,7 +1,7 @@
 package view;
 
 import controller.Controller;
-import model.ProgramState;
+import model.programState.ProgramState;
 import model.exceptions.InterpreterException;
 import model.expressions.*;
 import model.statements.*;
@@ -22,7 +22,7 @@ public class View {
         _controller = controller;
     }
 
-    public void run() throws InterpreterException {
+    public void run() {
         while (true)
         {
             String npl = _controller.getRepository().getCurrentProgram() == null ? " (no program loaded)" : "";

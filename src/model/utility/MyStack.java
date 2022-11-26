@@ -5,20 +5,41 @@ import model.exceptions.InterpreterException;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.Stack;
 
 public class MyStack<T> implements MyIStack<T> {
 
     private final Stack<T> _items = new Stack<>();
-    private final Class<T> _type;
+    protected final Class<T> _type;
 
     public MyStack(Class<T> type) {
         _type = type;
     }
 
-    public MyStack(Class<T> type, T firstItem) {
+    /** Items are not deeply copied. Items are added in the given order.
+     */
+    public MyStack(Class<T> type, Iterable<T> items) {
         this(type);
-        _items.push(firstItem);
+        for (var item : items)
+            _items.push(item);
+    }
+
+    /** If T implements IDeepCopyable, items are deeply copied.
+     */
+    public MyStack(MyStack<T> other) throws InterpreterException {
+        this(other._type);
+        var itemsArray = other.toArrayList();
+        Collections.reverse(itemsArray);
+
+        for (var item : itemsArray) {
+            if (item instanceof IDeepCopyable dci) {
+                var ic = dci.deepCopy();
+                if (_type.isInstance(ic))
+                    item = _type.cast(ic);
+            }
+            push(item);
+        }
     }
 
     @Override
@@ -36,6 +57,8 @@ public class MyStack<T> implements MyIStack<T> {
         return _items.empty();
     }
 
+    /** Items are returned in pop order.
+     */
     @Override
     public ArrayList<T> toArrayList() throws AdtException {
         var shallowCopy = (Stack<?>)_items.clone();
@@ -51,17 +74,6 @@ public class MyStack<T> implements MyIStack<T> {
 
     @Override
     public MyStack<T> deepCopy() throws InterpreterException {
-        var itemsArray = toArrayList();
-        Collections.reverse(itemsArray);
-        var result = new MyStack<>(_type);
-        for (var item : itemsArray) {
-            if (!(item instanceof IDeepCopyable dci))
-                throw new AdtException("All items must be deep copyable.");
-            Object ic = dci.deepCopy();
-            if (!_type.isInstance(ic))
-                throw new AdtException("Deep copy must return the same object type.");
-            result._items.push(_type.cast(ic));
-        }
-        return result;
+        return new MyStack<>(this);
     }
 }

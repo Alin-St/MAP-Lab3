@@ -1,8 +1,9 @@
 package model.expressions;
 
 import model.exceptions.ExpressionEvaluationException;
+import model.programState.IHeapTable;
+import model.programState.ISymbolTable;
 import model.types.IntType;
-import model.utility.MyIDictionary;
 import model.values.BoolValue;
 import model.values.IValue;
 import model.values.IntValue;
@@ -40,12 +41,12 @@ public class RelationalExpression implements IExpression {
 
     @SuppressWarnings("DuplicatedCode")
     @Override
-    public IValue evaluate(MyIDictionary<String, IValue> symbolTable) throws ExpressionEvaluationException {
-        var leftValue = _leftOperand.evaluate(symbolTable);
+    public IValue evaluate(ISymbolTable symbolTable, IHeapTable heapTable) throws ExpressionEvaluationException {
+        var leftValue = _leftOperand.evaluate(symbolTable, heapTable);
         if (!leftValue.getType().equals(IntType.get()))
             throw new ExpressionEvaluationException("First operand (of type '" + leftValue.getType().toString() + "') is not an integer.");
 
-        var rightValue = _rightOperand.evaluate(symbolTable);
+        var rightValue = _rightOperand.evaluate(symbolTable, heapTable);
         if (!rightValue.getType().equals(IntType.get()))
             throw new ExpressionEvaluationException("Second operand (of type '" + rightValue.getType().toString() + "') is not an integer.");
 

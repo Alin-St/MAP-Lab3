@@ -1,6 +1,6 @@
 package model.statements;
 
-import model.ProgramState;
+import model.programState.ProgramState;
 import model.exceptions.InterpreterException;
 import model.exceptions.StatementExecutionException;
 import model.expressions.IExpression;
@@ -26,7 +26,7 @@ public class CloseFileReaderStatement implements IStatement {
     public ProgramState execute(ProgramState state) throws InterpreterException {
         var symbolTable = state.getSymbolTable();
         var fileTable = state.getFileTable();
-        var fnv = _filename.evaluate(symbolTable);
+        var fnv = _filename.evaluate(symbolTable, state.getHeapTable());
 
         if (!fnv.getType().equals(StringType.get()))
             throw new StatementExecutionException("Argument of a close file reader is not a string.");

@@ -1,6 +1,6 @@
 package model.statements;
 
-import model.ProgramState;
+import model.programState.ProgramState;
 import model.exceptions.InterpreterException;
 import model.exceptions.StatementExecutionException;
 import model.expressions.IExpression;
@@ -23,7 +23,7 @@ public class ReadFileStatement implements IStatement {
 
     @Override
     public String toString() {
-        return "readFile(" + _fileName.toString() + ", " + _variableName.toString() + ")";
+        return "readFile(" + _fileName + ", " + _variableName + ")";
     }
 
     @Override
@@ -37,7 +37,7 @@ public class ReadFileStatement implements IStatement {
         if (!symbolTable.get(_variableName).getType().equals(IntType.get()))
             throw new StatementExecutionException("Variable type is not an integer.");
 
-        var fnv = _fileName.evaluate(symbolTable);
+        var fnv = _fileName.evaluate(symbolTable, state.getHeapTable());
 
         if (!fnv.getType().equals(StringType.get()))
             throw new StatementExecutionException("File name expression is not a string.");

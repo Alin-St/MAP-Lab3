@@ -1,12 +1,14 @@
 import controller.Controller;
-import model.ProgramState;
+import model.programState.ProgramState;
 import model.expressions.*;
 import model.statements.*;
 import model.types.BoolType;
 import model.types.IntType;
+import model.types.ReferenceType;
 import model.types.StringType;
 import model.values.BoolValue;
 import model.values.IntValue;
+import model.values.ReferenceValue;
 import model.values.StringValue;
 import repository.IRepository;
 import repository.Repository;
@@ -144,6 +146,65 @@ public class Interpreter {
         repo5.setCurrentProgram(prg5);
         Controller ctr5 = new Controller(repo5);
 
+        IStatement ex6 = new CompoundStatement(
+                new VariableDeclarationStatement("v", IntType.get()),
+                new CompoundStatement(
+                        new AssignmentStatement("v", new ValueExpression(new IntValue(4))),
+                        new CompoundStatement(
+                                new WhileStatement(
+                                        new RelationalExpression(
+                                                new VariableExpression("v"),
+                                                new ValueExpression(new IntValue(0)),
+                                                RelationalOperator.GREATER_THAN
+                                        ),
+                                        new CompoundStatement(
+                                                new PrintStatement(new VariableExpression("v")),
+                                                new AssignmentStatement("v", new ArithmeticExpression(
+                                                        new VariableExpression("v"),
+                                                        new ValueExpression(new IntValue(1)),
+                                                        ArithmeticOperator.SUBTRACTION
+                                                ))
+                                        )
+                                ),
+                                new PrintStatement(new VariableExpression("v"))
+                        )
+                )
+        );
+        ProgramState prg6 = new ProgramState(ex6);
+        IRepository repo6 = new Repository("log6.txt");
+        repo6.setCurrentProgram(prg6);
+        Controller ctr6 = new Controller(repo6);
+
+        IStatement ex7 = new CompoundStatement(
+                new VariableDeclarationStatement("v", new ReferenceType(IntType.get())),
+                new CompoundStatement(
+                        new HeapAllocationStatement("v", new ValueExpression(new IntValue(20))),
+                        new CompoundStatement(
+                                new VariableDeclarationStatement("a",
+                                        new ReferenceType(new ReferenceType(IntType.get()))),
+                                new CompoundStatement(
+                                        new HeapAllocationStatement("a", new VariableExpression("v")),
+                                        new CompoundStatement(
+                                                new HeapAllocationStatement("v",
+                                                        new ValueExpression(new IntValue(30))),
+                                                new CompoundStatement(
+                                                        new PrintStatement(new HeapReadingExpression(
+                                                                new HeapReadingExpression(
+                                                                        new VariableExpression("a")))),
+                                                        new AssignmentStatement("a", new ValueExpression(
+                                                                new ReferenceType(new ReferenceType(IntType.get()))
+                                                                        .defaultValue()))
+                                                )
+                                        )
+                                )
+                        )
+                )
+        );
+        ProgramState prg7 = new ProgramState(ex7);
+        IRepository repo7 = new Repository("log7.txt");
+        repo7.setCurrentProgram(prg7);
+        Controller ctr7 = new Controller(repo7);
+
         var menu = new TextMenu();
         menu.addCommand(new ExitCommand("0", "exit"));
         menu.addCommand(new RunExample("1", ex1.toString(), ctr1));
@@ -151,6 +212,8 @@ public class Interpreter {
         menu.addCommand(new RunExample("3", ex3.toString(), ctr3));
         menu.addCommand(new RunExample("4", ex4.toString(), ctr4));
         menu.addCommand(new RunExample("5", ex5.toString(), ctr5));
+        menu.addCommand(new RunExample("6", ex6.toString(), ctr6));
+        menu.addCommand(new RunExample("7", ex7.toString(), ctr7));
         menu.show();
     }
 }

@@ -1,7 +1,7 @@
 package model.statements;
 
 import model.exceptions.InterpreterException;
-import model.ProgramState;
+import model.programState.ProgramState;
 import model.utility.IDeepCopyable;
 
 public interface IStatement extends IDeepCopyable {

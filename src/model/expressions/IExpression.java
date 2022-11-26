@@ -1,12 +1,13 @@
 package model.expressions;
 
 import model.exceptions.ExpressionEvaluationException;
+import model.programState.IHeapTable;
+import model.programState.ISymbolTable;
 import model.utility.IDeepCopyable;
-import model.utility.MyIDictionary;
 import model.values.IValue;
 
 public interface IExpression extends IDeepCopyable {
     String toString();
-    IValue evaluate(MyIDictionary<String, IValue> symbolTable) throws ExpressionEvaluationException;
+    IValue evaluate(ISymbolTable symbolTable, IHeapTable heapTable) throws ExpressionEvaluationException;
     IExpression deepCopy();
 }

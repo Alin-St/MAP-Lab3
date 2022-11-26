@@ -23,7 +23,7 @@ public class StringValue implements IValue {
     }
 
     @Override
-    public IType getType() {
+    public StringType getType() {
         return StringType.get();
     }
 

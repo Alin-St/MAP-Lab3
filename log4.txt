@@ -1,0 +1,266 @@
+Program state:
+    Execution Stack:
+        string varf;
+        varf = "test.in";
+        openRFile(varf);
+        int varc;
+        readFile(varf, varc);
+        print(varc);
+        readFile(varf, varc);
+        print(varc);
+        closeRFile(varf)
+    Symbol Table:
+        No Symbol declared.
+    Output:
+        No output data.
+    File Table:
+        No file descriptor.
+
+Program state:
+    Execution Stack:
+        string varf |
+        varf = "test.in";
+        openRFile(varf);
+        int varc;
+        readFile(varf, varc);
+        print(varc);
+        readFile(varf, varc);
+        print(varc);
+        closeRFile(varf)
+    Symbol Table:
+        No Symbol declared.
+    Output:
+        No output data.
+    File Table:
+        No file descriptor.
+
+Program state:
+    Execution Stack:
+        varf = "test.in";
+        openRFile(varf);
+        int varc;
+        readFile(varf, varc);
+        print(varc);
+        readFile(varf, varc);
+        print(varc);
+        closeRFile(varf)
+    Symbol Table:
+        varf = ""
+    Output:
+        No output data.
+    File Table:
+        No file descriptor.
+
+Program state:
+    Execution Stack:
+        varf = "test.in" |
+        openRFile(varf);
+        int varc;
+        readFile(varf, varc);
+        print(varc);
+        readFile(varf, varc);
+        print(varc);
+        closeRFile(varf)
+    Symbol Table:
+        varf = ""
+    Output:
+        No output data.
+    File Table:
+        No file descriptor.
+
+Program state:
+    Execution Stack:
+        openRFile(varf);
+        int varc;
+        readFile(varf, varc);
+        print(varc);
+        readFile(varf, varc);
+        print(varc);
+        closeRFile(varf)
+    Symbol Table:
+        varf = "test.in"
+    Output:
+        No output data.
+    File Table:
+        No file descriptor.
+
+Program state:
+    Execution Stack:
+        openRFile(varf) |
+        int varc;
+        readFile(varf, varc);
+        print(varc);
+        readFile(varf, varc);
+        print(varc);
+        closeRFile(varf)
+    Symbol Table:
+        varf = "test.in"
+    Output:
+        No output data.
+    File Table:
+        No file descriptor.
+
+Program state:
+    Execution Stack:
+        int varc;
+        readFile(varf, varc);
+        print(varc);
+        readFile(varf, varc);
+        print(varc);
+        closeRFile(varf)
+    Symbol Table:
+        varf = "test.in"
+    Output:
+        No output data.
+    File Table:
+        "test.in"
+
+Program state:
+    Execution Stack:
+        int varc |
+        readFile(varf, varc);
+        print(varc);
+        readFile(varf, varc);
+        print(varc);
+        closeRFile(varf)
+    Symbol Table:
+        varf = "test.in"
+    Output:
+        No output data.
+    File Table:
+        "test.in"
+
+Program state:
+    Execution Stack:
+        readFile(varf, varc);
+        print(varc);
+        readFile(varf, varc);
+        print(varc);
+        closeRFile(varf)
+    Symbol Table:
+        varf = "test.in"
+        varc = 0
+    Output:
+        No output data.
+    File Table:
+        "test.in"
+
+Program state:
+    Execution Stack:
+        readFile(varf, varc);
+        print(varc) |
+        readFile(varf, varc);
+        print(varc);
+        closeRFile(varf)
+    Symbol Table:
+        varf = "test.in"
+        varc = 0
+    Output:
+        No output data.
+    File Table:
+        "test.in"
+
+Program state:
+    Execution Stack:
+        readFile(varf, varc) |
+        print(varc) |
+        readFile(varf, varc);
+        print(varc);
+        closeRFile(varf)
+    Symbol Table:
+        varf = "test.in"
+        varc = 0
+    Output:
+        No output data.
+    File Table:
+        "test.in"
+
+Program state:
+    Execution Stack:
+        print(varc) |
+        readFile(varf, varc);
+        print(varc);
+        closeRFile(varf)
+    Symbol Table:
+        varf = "test.in"
+        varc = 0
+    Output:
+        No output data.
+    File Table:
+        "test.in"
+
+Program state:
+    Execution Stack:
+        readFile(varf, varc);
+        print(varc);
+        closeRFile(varf)
+    Symbol Table:
+        varf = "test.in"
+        varc = 0
+    Output:
+        -> 0
+    File Table:
+        "test.in"
+
+Program state:
+    Execution Stack:
+        readFile(varf, varc);
+        print(varc) |
+        closeRFile(varf)
+    Symbol Table:
+        varf = "test.in"
+        varc = 0
+    Output:
+        -> 0
+    File Table:
+        "test.in"
+
+Program state:
+    Execution Stack:
+        readFile(varf, varc) |
+        print(varc) |
+        closeRFile(varf)
+    Symbol Table:
+        varf = "test.in"
+        varc = 0
+    Output:
+        -> 0
+    File Table:
+        "test.in"
+
+Program state:
+    Execution Stack:
+        print(varc) |
+        closeRFile(varf)
+    Symbol Table:
+        varf = "test.in"
+        varc = 10
+    Output:
+        -> 0
+    File Table:
+        "test.in"
+
+Program state:
+    Execution Stack:
+        closeRFile(varf)
+    Symbol Table:
+        varf = "test.in"
+        varc = 10
+    Output:
+        -> 0
+        -> 10
+    File Table:
+        "test.in"
+
+Program state:
+    Execution Stack:
+        Execution stack empty.
+    Symbol Table:
+        varf = "test.in"
+        varc = 10
+    Output:
+        -> 0
+        -> 10
+    File Table:
+        No file descriptor.
+

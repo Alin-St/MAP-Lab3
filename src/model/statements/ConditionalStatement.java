@@ -1,6 +1,6 @@
 package model.statements;
 
-import model.ProgramState;
+import model.programState.ProgramState;
 import model.exceptions.InterpreterException;
 import model.exceptions.StatementExecutionException;
 import model.expressions.IExpression;
@@ -30,7 +30,7 @@ public class ConditionalStatement implements IStatement {
     public ProgramState execute(ProgramState state) throws InterpreterException {
         var stack = state.getExecutionStack();
         var symbolTable = state.getSymbolTable();
-        var condVal = _condition.evaluate(symbolTable);
+        var condVal = _condition.evaluate(symbolTable, state.getHeapTable());
 
         if (!condVal.getType().equals(BoolType.get()))
             throw new StatementExecutionException("Conditional expression is not a boolean.");

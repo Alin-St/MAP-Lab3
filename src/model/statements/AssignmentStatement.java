@@ -1,6 +1,6 @@
 package model.statements;
 
-import model.ProgramState;
+import model.programState.ProgramState;
 import model.exceptions.InterpreterException;
 import model.exceptions.StatementExecutionException;
 import model.expressions.IExpression;
@@ -27,7 +27,7 @@ public class AssignmentStatement implements IStatement {
         if (!symbolTable.containsKey(_identifier))
             throw new StatementExecutionException("Variable Id '" + _identifier + "' is not declared.");
 
-        var value = _expression.evaluate(symbolTable);
+        var value = _expression.evaluate(symbolTable, state.getHeapTable());
         var type = symbolTable.get(_identifier).getType();
 
         if (!value.getType().equals(type))

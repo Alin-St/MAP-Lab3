@@ -1,9 +1,10 @@
 package controller;
 
 import model.exceptions.InterpreterException;
-import model.ProgramState;
+import model.programState.ProgramState;
 import model.exceptions.StatementExecutionException;
 import model.statements.IStatement;
+import model.utility.GarbageCollector;
 import repository.IRepository;
 
 public class Controller {
@@ -31,17 +32,23 @@ public class Controller {
     }
 
     public void allSteps() throws InterpreterException {
-
         ProgramState state = _repository.getCurrentProgram();
         if (_displayFlag)
             System.out.println("Initial program state:\n" + state.toString().indent(4));
-        _repository.logProgramState();
+        _repository.logProgramState("Initial program state:");
 
         while (!state.getExecutionStack().empty()) {
             state = oneStep(state);
             if (_displayFlag)
                 System.out.println("Current program state:\n" + state.toString().indent(4));
-            _repository.logProgramState();
+            _repository.logProgramState("Current program state:");
+
+            var newHeap = GarbageCollector.run(state.getHeapTable(), state.getSymbolTable());
+            state.setHeapTable(newHeap);
+
+            if (_displayFlag)
+                System.out.println("Current program state (after garbage collector):\n" + state.toString().indent(4));
+            _repository.logProgramState("Current program state (after garbage collector):");
         }
     }
 }

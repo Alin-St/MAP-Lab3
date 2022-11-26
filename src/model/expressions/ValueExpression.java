@@ -1,6 +1,7 @@
 package model.expressions;
 
-import model.utility.MyIDictionary;
+import model.programState.IHeapTable;
+import model.programState.ISymbolTable;
 import model.values.IValue;
 
 public class ValueExpression implements IExpression {
@@ -17,7 +18,7 @@ public class ValueExpression implements IExpression {
     }
 
     @Override
-    public IValue evaluate(MyIDictionary<String, IValue> symbolTable) {
+    public IValue evaluate(ISymbolTable symbolTable, IHeapTable heapTable) {
         return _value;
     }
 

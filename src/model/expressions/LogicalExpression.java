@@ -1,8 +1,9 @@
 package model.expressions;
 
 import model.exceptions.ExpressionEvaluationException;
+import model.programState.IHeapTable;
+import model.programState.ISymbolTable;
 import model.types.BoolType;
-import model.utility.MyIDictionary;
 import model.values.BoolValue;
 import model.values.IValue;
 
@@ -31,12 +32,12 @@ public class LogicalExpression implements IExpression {
     }
 
     @Override
-    public IValue evaluate(MyIDictionary<String, IValue> symbolTable) throws ExpressionEvaluationException {
-        var leftValue = _leftOperand.evaluate(symbolTable);
+    public IValue evaluate(ISymbolTable symbolTable, IHeapTable heapTable) throws ExpressionEvaluationException {
+        var leftValue = _leftOperand.evaluate(symbolTable, heapTable);
         if (!leftValue.getType().equals(BoolType.get()))
             throw new ExpressionEvaluationException("First operand (of type '" + leftValue.getType().toString() + "') is not a boolean.");
 
-        var rightValue = _rightOperand.evaluate(symbolTable);
+        var rightValue = _rightOperand.evaluate(symbolTable, heapTable);
         if (!rightValue.getType().equals(BoolType.get()))
             throw new ExpressionEvaluationException("Second operand (of type '" + rightValue.getType().toString() + "') is not a boolean.");
 

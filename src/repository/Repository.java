@@ -1,6 +1,6 @@
 package repository;
 
-import model.ProgramState;
+import model.programState.ProgramState;
 import model.exceptions.InterpreterException;
 
 import java.io.BufferedWriter;
@@ -24,13 +24,13 @@ public class Repository implements IRepository {
     public void setCurrentProgram(ProgramState value) { _program = value; }
 
     @Override
-    public void logProgramState() throws InterpreterException {
+    public void logProgramState(String prompt) throws InterpreterException {
         try {
             var fw = new FileWriter(_logFilePath, true);
             var bw = new BufferedWriter(fw);
             var pw = new PrintWriter(bw);
 
-            pw.println("Program state:");
+            pw.println(prompt == null ? "Program state:" : prompt);
             pw.println(_program.toString().indent(4));
 
             pw.close();

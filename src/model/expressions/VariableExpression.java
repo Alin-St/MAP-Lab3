@@ -1,7 +1,8 @@
 package model.expressions;
 
 import model.exceptions.ExpressionEvaluationException;
-import model.utility.MyIDictionary;
+import model.programState.IHeapTable;
+import model.programState.ISymbolTable;
 import model.values.IValue;
 
 public class VariableExpression implements IExpression {
@@ -18,7 +19,7 @@ public class VariableExpression implements IExpression {
     }
 
     @Override
-    public IValue evaluate(MyIDictionary<String, IValue> symbolTable) throws ExpressionEvaluationException {
+    public IValue evaluate(ISymbolTable symbolTable, IHeapTable heapTable) throws ExpressionEvaluationException {
         if (!symbolTable.containsKey(_identifier))
             throw new ExpressionEvaluationException("Variable '" + _identifier + "' not declared.");
         return symbolTable.get(_identifier);
@@ -26,6 +27,6 @@ public class VariableExpression implements IExpression {
 
     @Override
     public VariableExpression deepCopy() {
-        return new VariableExpression(_identifier);
+        return this; // Class is immutable.
     }
 }

@@ -1,7 +1,6 @@
 package model.statements;
 
-import model.exceptions.InterpreterException;
-import model.ProgramState;
+import model.programState.ProgramState;
 
 public class CompoundStatement implements IStatement {
 

@@ -14,6 +14,29 @@ public class MyList<T> implements MyIList<T> {
         _type = type;
     }
 
+    /** Items are not deeply copied.
+     */
+    public MyList(Class<T> type, Iterable<T> items) {
+        this(type);
+        for (var item : items)
+            add(item);
+    }
+
+
+    /** If T implements IDeepCopyable, items are deeply copied.
+     */
+    public MyList(MyList<T> other) throws InterpreterException {
+        this(other._type);
+        for (var item : other._items) {
+            if (item instanceof IDeepCopyable dci) {
+                var ic = dci.deepCopy();
+                if (_type.isInstance(ic))
+                    item = _type.cast(ic);
+            }
+            add(item);
+        }
+    }
+
     @Override
     public void add(T item) {
         _items.add(item);
@@ -26,15 +49,6 @@ public class MyList<T> implements MyIList<T> {
 
     @Override
     public MyList<T> deepCopy() throws InterpreterException {
-        var result = new MyList<>(_type);
-        for (var item : _items) {
-            if (!(item instanceof IDeepCopyable dci))
-                throw new AdtException("All items must be deep copyable.");
-            Object ic = dci.deepCopy();
-            if (!_type.isInstance(ic))
-                throw new AdtException("Deep copy must return the same object type.");
-            result._items.add(_type.cast(ic));
-        }
-        return result;
+        return new MyList<>(this);
     }
 }

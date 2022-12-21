@@ -20,7 +20,7 @@ public class PrintStatement implements IStatement {
         var output = state.getOutputStructure();
         var symbolTable = state.getSymbolTable();
         output.add(_expression.evaluate(symbolTable, state.getHeapTable()));
-        return state;
+        return null;
     }
 
     @Override

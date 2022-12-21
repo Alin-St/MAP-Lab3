@@ -45,8 +45,7 @@ public class OpenFileReaderStatement implements IStatement {
         }
 
         fileTable.put(fnsv, br);
-
-        return state;
+        return null;
     }
 
     @Override

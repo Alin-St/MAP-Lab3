@@ -44,8 +44,7 @@ public class CloseFileReaderStatement implements IStatement {
         }
 
         fileTable.remove(fnsv);
-
-        return state;
+        return null;
     }
 
     @Override

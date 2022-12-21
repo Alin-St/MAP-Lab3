@@ -44,7 +44,7 @@ public class HeapWritingStatement implements IStatement {
 
         heapTable.put(refVal.getAddress(), val);
 
-        return state;
+        return null;
     }
 
     @Override

@@ -1,16 +1,23 @@
 package controller;
 
 import model.exceptions.InterpreterException;
+import model.garbageCollector.ConservativeGarbageCollector;
 import model.programState.ProgramState;
-import model.exceptions.StatementExecutionException;
-import model.statements.IStatement;
-import model.utility.GarbageCollector;
 import repository.IRepository;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 public class Controller {
 
     private final IRepository _repository;
     private boolean _displayFlag;
+    private ExecutorService _executor;
 
     public Controller(IRepository repository) {
         _repository = repository;
@@ -22,33 +29,69 @@ public class Controller {
 
     public void setDisplayFlag(boolean value) { _displayFlag = value; }
 
-    public ProgramState oneStep(ProgramState state) throws InterpreterException {
-        var stack = state.getExecutionStack();
-        if (stack.empty())
-            throw new StatementExecutionException("Stack is empty.");
+    public void oneStepForAllPrograms(List<ProgramState> programStates) throws InterruptedException {
+        // Log program states before execution.
+        programStates.forEach(p -> {
+            try { _repository.logProgramState(p, "Program state before execution (id " + p.getId() + "):"); }
+            catch (InterpreterException e) { e.printStackTrace(); }
+        });
 
-        IStatement cs = stack.pop();
-        return cs.execute(state);
+        // Prepare the list of callables.
+        List<Callable<ProgramState>> callList = programStates.stream()
+                .map((ProgramState p) -> (Callable<ProgramState>) (p::oneStep))
+                .toList();
+
+        // Start the execution of callables (returns the list of new threads).
+        List<ProgramState> newPrograms = _executor.invokeAll(callList).stream()
+                .map(future -> {
+                    try { return future.get(); }
+                    catch (InterruptedException | ExecutionException e) {
+                        e.printStackTrace();
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .toList();
+
+        // Add the new programs to the list.
+        programStates.addAll(newPrograms);
+
+        // Log program states after execution.
+        programStates.forEach(p -> {
+            try { _repository.logProgramState(p, "Program state after execution (id " + p.getId() + "):"); }
+            catch (InterpreterException e) { e.printStackTrace(); }
+        });
+
+        // Save current program list to repository.
+        _repository.setProgramList(programStates);
     }
 
-    public void allSteps() throws InterpreterException {
-        ProgramState state = _repository.getCurrentProgram();
-        if (_displayFlag)
-            System.out.println("Initial program state:\n" + state.toString().indent(4));
-        _repository.logProgramState("Initial program state:");
+    public void allSteps() throws InterpreterException, InterruptedException {
 
-        while (!state.getExecutionStack().empty()) {
-            state = oneStep(state);
-            if (_displayFlag)
-                System.out.println("Current program state:\n" + state.toString().indent(4));
-            _repository.logProgramState("Current program state:");
+        _executor = Executors.newFixedThreadPool(2);
 
-            var newHeap = GarbageCollector.run(state.getHeapTable(), state.getSymbolTable());
-            state.setHeapTable(newHeap);
+        // Remove completed programs.
+        List<ProgramState> programStates = removeCompletedPrograms(_repository.getProgramList());
 
-            if (_displayFlag)
-                System.out.println("Current program state (after garbage collector):\n" + state.toString().indent(4));
-            _repository.logProgramState("Current program state (after garbage collector):");
+        // Execution loop.
+        while (programStates.size() > 0) {
+            // Garbage collector.
+            var newHeap = ConservativeGarbageCollector.run(programStates.get(0).getHeapTable(),
+                    programStates.stream().map(ProgramState::getSymbolTable).toList());
+            programStates.forEach(p -> p.setHeapTable(newHeap));
+
+            // One-step execution.
+            oneStepForAllPrograms(programStates);
+            programStates = removeCompletedPrograms(_repository.getProgramList());
         }
+        _executor.shutdown();
+
+        // The repository should contain at least one completed program (its list is not empty).
+
+        _repository.setProgramList(programStates);
+    }
+
+    public List<ProgramState> removeCompletedPrograms(List<ProgramState> programStates) {
+        return programStates.stream().filter(ProgramState::isNotCompleted).collect(Collectors.toList());
     }
 }

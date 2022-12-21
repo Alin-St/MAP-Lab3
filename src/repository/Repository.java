@@ -7,31 +7,38 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Repository implements IRepository {
 
-    private ProgramState _program;
+    private List<ProgramState> _programStates = new ArrayList<>();
     private final String _logFilePath;
 
     public Repository(String logFilePath) {
         _logFilePath = logFilePath;
     }
 
-    @Override
-    public ProgramState getCurrentProgram() { return _program; }
+    public Repository(String logFilePath, ProgramState initialProgram) {
+        this(logFilePath);
+        _programStates.add(initialProgram);
+    }
 
     @Override
-    public void setCurrentProgram(ProgramState value) { _program = value; }
+    public List<ProgramState> getProgramList() { return _programStates; }
 
     @Override
-    public void logProgramState(String prompt) throws InterpreterException {
+    public void setProgramList(List<ProgramState> programStates) { _programStates = programStates; }
+
+    @Override
+    public void logProgramState(ProgramState program, String prompt) throws InterpreterException {
         try {
             var fw = new FileWriter(_logFilePath, true);
             var bw = new BufferedWriter(fw);
             var pw = new PrintWriter(bw);
 
             pw.println(prompt == null ? "Program state:" : prompt);
-            pw.println(_program.toString().indent(4));
+            pw.println(program.toString().indent(4));
 
             pw.close();
             bw.close();

@@ -16,8 +16,8 @@ public class RunExample extends Command {
     public void execute() {
         try {
             _controller.allSteps();
-        } catch (InterpreterException e) {
-            System.out.println("Error: " + e.toString());
+        } catch (InterpreterException | InterruptedException e) {
+            System.out.println("Error: " + e);
         }
     }
 }

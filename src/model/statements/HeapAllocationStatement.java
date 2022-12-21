@@ -44,7 +44,7 @@ public class HeapAllocationStatement implements IStatement {
         heapTable.put(heapAddress, expressionValue);
         symbolTable.put(_identifier, new ReferenceValue(heapAddress, identifierRType.getInnerType()));
 
-        return state;
+        return null;
     }
 
     @Override

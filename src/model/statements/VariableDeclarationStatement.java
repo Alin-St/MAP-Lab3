@@ -26,7 +26,7 @@ public class VariableDeclarationStatement implements IStatement {
             throw new StatementExecutionException("Variable '" + _identifier + "' is already declared.");
 
         symbolTable.put(_identifier, _type.defaultValue());
-        return state;
+        return null;
     }
 
     @Override

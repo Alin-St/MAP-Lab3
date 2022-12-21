@@ -68,8 +68,7 @@ public class ReadFileStatement implements IStatement {
         }
 
         symbolTable.put(_variableName, new IntValue(value));
-
-        return state;
+        return null;
     }
 
     @Override

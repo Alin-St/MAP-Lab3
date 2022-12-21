@@ -42,7 +42,7 @@ public class ConditionalStatement implements IStatement {
         else
             stack.push(_elseStatement);
 
-        return state;
+        return null;
     }
 
     @Override

@@ -11,7 +11,7 @@ public class NullStatement implements IStatement {
 
     @Override
     public ProgramState execute(ProgramState state) {
-        return state;
+        return null;
     }
 
     @Override

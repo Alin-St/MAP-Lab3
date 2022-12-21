@@ -1,19 +1,22 @@
 package model.programState;
 
 import model.exceptions.InterpreterException;
+import model.exceptions.StatementExecutionException;
 import model.statements.IStatement;
 import model.utility.IDeepCopyable;
 
 public class ProgramState implements IDeepCopyable {
 
+    private int _id;
     private IExecutionStack _executionStack;
     private ISymbolTable _symbolTable;
     private IOutputStructure _outputStructure;
     private IFileTable _fileTable;
     private IHeapTable _heapTable;
 
-    public ProgramState(IExecutionStack executionStack, ISymbolTable symbolTable, IOutputStructure outputStructure,
-                        IFileTable fileTable, IHeapTable heapTable) {
+    public ProgramState(int id, IExecutionStack executionStack, ISymbolTable symbolTable,
+                        IOutputStructure outputStructure, IFileTable fileTable, IHeapTable heapTable) {
+        _id = id;
         _executionStack = executionStack;
         _symbolTable = symbolTable;
         _outputStructure = outputStructure;
@@ -22,9 +25,12 @@ public class ProgramState implements IDeepCopyable {
     }
 
     public ProgramState(IStatement mainStatement) {
-        this(new ExecutionStack(mainStatement), new SymbolTable(), new OutputStructure(), new FileTable(),
+        this(getNewId(), new ExecutionStack(mainStatement), new SymbolTable(), new OutputStructure(), new FileTable(),
                 new HeapTable());
     }
+
+    public int getId() { return _id; }
+    public void setId(int id) { _id = id; }
 
     public IExecutionStack getExecutionStack() { return _executionStack; }
     public void setExecutionStack(IExecutionStack value) { _executionStack = value; }
@@ -41,9 +47,22 @@ public class ProgramState implements IDeepCopyable {
     public IHeapTable getHeapTable() { return _heapTable; }
     public void setHeapTable(IHeapTable value) { _heapTable = value; }
 
+    public boolean isNotCompleted() { return !_executionStack.empty(); }
+
+    public ProgramState oneStep() throws InterpreterException {
+        var stack = this.getExecutionStack();
+        if (stack.empty())
+            throw new StatementExecutionException("Stack is empty.");
+
+        IStatement cs = stack.pop();
+        return cs.execute(this);
+    }
+
     @Override
     public String toString() {
-        return "Execution Stack:\n" +
+        return "Id:\n" +
+                Integer.toString(_id).indent(4) +
+                "Execution Stack:\n" +
                 executionStackToString(_executionStack).indent(4) +
                 "Symbol Table:\n" +
                 symbolTableToString(_symbolTable).indent(4) +
@@ -57,8 +76,16 @@ public class ProgramState implements IDeepCopyable {
 
     @Override
     public ProgramState deepCopy() throws InterpreterException {
-        return new ProgramState(_executionStack.deepCopy(), _symbolTable.deepCopy(), _outputStructure.deepCopy(),
+        return new ProgramState(_id, _executionStack.deepCopy(), _symbolTable.deepCopy(), _outputStructure.deepCopy(),
                 _fileTable.deepCopy(), _heapTable.deepCopy());
+    }
+
+    private static int _nextId = 1;
+
+    public static int getNewId() {
+        int res = _nextId;
+        _nextId++;
+        return res;
     }
 
     public static String executionStackToString(IExecutionStack stack) {

@@ -35,7 +35,7 @@ public class AssignmentStatement implements IStatement {
                     "' and type of variable '" + type.toString() + "' do not match.");
 
         symbolTable.put(_identifier, value);
-        return state;
+        return null;
     }
 
     @Override

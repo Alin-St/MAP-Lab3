@@ -14,6 +14,7 @@ import model.values.StringValue;
 
 import java.util.Scanner;
 
+@SuppressWarnings("DuplicatedCode")
 public class View {
 
     private final Controller _controller;
@@ -25,7 +26,7 @@ public class View {
     public void run() {
         while (true)
         {
-            String npl = _controller.getRepository().getCurrentProgram() == null ? " (no program loaded)" : "";
+            String npl = _controller.getRepository().getProgramList().size() == 0 ? " (no program loaded)" : "";
 
             System.out.println(
                     "1. Input a program.\n" +
@@ -60,13 +61,13 @@ public class View {
         int cmd = readInt("Choose a program: ");
 
         if (cmd == 1)
-            _controller.getRepository().setCurrentProgram(TIProgram1());
+            _controller.getRepository().getProgramList().add(TIProgram1());
         else if (cmd == 2)
-            _controller.getRepository().setCurrentProgram(TIProgram2());
+            _controller.getRepository().getProgramList().add(TIProgram2());
         else if (cmd == 3)
-            _controller.getRepository().setCurrentProgram(TIProgram3());
+            _controller.getRepository().getProgramList().add(TIProgram3());
         else if (cmd == 4)
-            _controller.getRepository().setCurrentProgram(TIProgram4());
+            _controller.getRepository().getProgramList().add(TIProgram4());
         else {
             if (cmd != 0)
                 System.out.println("Unknown command.\n");
@@ -76,9 +77,9 @@ public class View {
         System.out.println("Program loaded successfully.\n");
     }
 
-    public void runProgram() throws InterpreterException {
+    public void runProgram() throws InterpreterException, InterruptedException {
 
-        if (_controller.getRepository().getCurrentProgram() == null) {
+        if (_controller.getRepository().getProgramList().size() == 0) {
             System.out.println("No program loaded.");
             return;
         }

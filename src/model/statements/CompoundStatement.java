@@ -20,7 +20,7 @@ public class CompoundStatement implements IStatement {
         var stack = state.getExecutionStack();
         stack.push(_second);
         stack.push(_first);
-        return state;
+        return null;
     }
 
     @Override

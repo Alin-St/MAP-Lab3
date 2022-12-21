@@ -1,4 +1,4 @@
-package model.utility;
+package model.garbageCollector;
 
 import model.programState.HeapTable;
 import model.programState.IHeapTable;
@@ -6,15 +6,19 @@ import model.programState.ISymbolTable;
 import model.values.ReferenceValue;
 
 import java.util.HashSet;
+import java.util.List;
 
-public class GarbageCollector {
-    public static IHeapTable run(IHeapTable heapTable, ISymbolTable symbolTable) {
+public class ConservativeGarbageCollector {
+
+    public static IHeapTable run(IHeapTable heapTable, List<ISymbolTable> symbolTables) {
         var result = new HeapTable();
         var keepAddressSet = new HashSet<Integer>();
 
-        for (var entry : symbolTable.toArrayList()) {
-            if (entry.getValue() instanceof ReferenceValue refVal && !keepAddressSet.contains(refVal.getAddress())) {
-                addRecursively(refVal.getAddress(), keepAddressSet, heapTable);
+        for (var symbolTable : symbolTables) {
+            for (var entry : symbolTable.toArrayList()) {
+                if (entry.getValue() instanceof ReferenceValue refVal && !keepAddressSet.contains(refVal.getAddress())) {
+                    addRecursively(refVal.getAddress(), keepAddressSet, heapTable);
+                }
             }
         }
 

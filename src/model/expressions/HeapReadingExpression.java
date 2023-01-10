@@ -1,8 +1,12 @@
 package model.expressions;
 
 import model.exceptions.ExpressionEvaluationException;
+import model.exceptions.InterpreterException;
 import model.programState.IHeapTable;
 import model.programState.ISymbolTable;
+import model.types.IType;
+import model.types.ReferenceType;
+import model.utility.MyIDictionary;
 import model.values.IValue;
 import model.values.ReferenceValue;
 
@@ -35,5 +39,13 @@ public class HeapReadingExpression implements IExpression {
     @Override
     public HeapReadingExpression deepCopy() {
         return new HeapReadingExpression(_address.deepCopy());
+    }
+
+    @Override
+    public IType typeCheck(MyIDictionary<String, IType> typeEnv) throws InterpreterException {
+        var at = _address.typeCheck(typeEnv);
+        if (!(at instanceof ReferenceType art))
+            throw new InterpreterException("The given argument is not a reference type.");
+        return art.getInnerType();
     }
 }

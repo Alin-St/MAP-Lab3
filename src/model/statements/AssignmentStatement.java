@@ -4,6 +4,8 @@ import model.programState.ProgramState;
 import model.exceptions.InterpreterException;
 import model.exceptions.StatementExecutionException;
 import model.expressions.IExpression;
+import model.types.IType;
+import model.utility.MyIDictionary;
 
 public class AssignmentStatement implements IStatement {
 
@@ -41,5 +43,14 @@ public class AssignmentStatement implements IStatement {
     @Override
     public AssignmentStatement deepCopy() {
         return new AssignmentStatement(_identifier, _expression.deepCopy());
+    }
+
+    @Override
+    public MyIDictionary<String, IType> typeCheck(MyIDictionary<String, IType> typeEnv) throws InterpreterException {
+        var identifierType = typeEnv.get(_identifier);
+        var expressionType = _expression.typeCheck(typeEnv);
+        if (!identifierType.equals(expressionType))
+            throw new InterpreterException("Expression type is different from identifier type.");
+        return typeEnv;
     }
 }

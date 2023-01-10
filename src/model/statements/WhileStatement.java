@@ -5,6 +5,8 @@ import model.exceptions.StatementExecutionException;
 import model.expressions.IExpression;
 import model.programState.ProgramState;
 import model.types.BoolType;
+import model.types.IType;
+import model.utility.MyIDictionary;
 import model.values.BoolValue;
 
 public class WhileStatement implements IStatement {
@@ -44,5 +46,13 @@ public class WhileStatement implements IStatement {
     @Override
     public WhileStatement deepCopy() {
         return new WhileStatement(_condition.deepCopy(), _whileStatement.deepCopy());
+    }
+
+    @Override
+    public MyIDictionary<String, IType> typeCheck(MyIDictionary<String, IType> typeEnv) throws InterpreterException {
+        if (!_condition.typeCheck(typeEnv).equals(BoolType.get()))
+            throw new InterpreterException("Condition is not a boolean.");
+        _whileStatement.typeCheck(typeEnv.deepCopy());
+        return typeEnv;
     }
 }

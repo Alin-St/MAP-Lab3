@@ -1,8 +1,11 @@
 package model.statements;
 
+import model.exceptions.InterpreterException;
 import model.programState.ProgramState;
 import model.exceptions.ExpressionEvaluationException;
 import model.expressions.IExpression;
+import model.types.IType;
+import model.utility.MyIDictionary;
 
 public class PrintStatement implements IStatement {
 
@@ -26,5 +29,11 @@ public class PrintStatement implements IStatement {
     @Override
     public PrintStatement deepCopy() {
         return new PrintStatement(_expression.deepCopy());
+    }
+
+    @Override
+    public MyIDictionary<String, IType> typeCheck(MyIDictionary<String, IType> typeEnv) throws InterpreterException {
+        _expression.typeCheck(typeEnv);
+        return typeEnv;
     }
 }

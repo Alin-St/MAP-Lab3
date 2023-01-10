@@ -4,7 +4,9 @@ import model.programState.ProgramState;
 import model.exceptions.InterpreterException;
 import model.exceptions.StatementExecutionException;
 import model.expressions.IExpression;
+import model.types.IType;
 import model.types.StringType;
+import model.utility.MyIDictionary;
 import model.values.StringValue;
 
 import java.io.BufferedReader;
@@ -51,5 +53,12 @@ public class OpenFileReaderStatement implements IStatement {
     @Override
     public IStatement deepCopy() {
         return new OpenFileReaderStatement(_filename.deepCopy());
+    }
+
+    @Override
+    public MyIDictionary<String, IType> typeCheck(MyIDictionary<String, IType> typeEnv) throws InterpreterException {
+        if (!_filename.typeCheck(typeEnv).equals(StringType.get()))
+            throw new InterpreterException("Filename is not a string.");
+        return typeEnv;
     }
 }

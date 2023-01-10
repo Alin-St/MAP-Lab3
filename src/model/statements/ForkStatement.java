@@ -3,6 +3,8 @@ package model.statements;
 import model.exceptions.InterpreterException;
 import model.programState.ExecutionStack;
 import model.programState.ProgramState;
+import model.types.IType;
+import model.utility.MyIDictionary;
 
 public class ForkStatement implements IStatement {
 
@@ -32,5 +34,11 @@ public class ForkStatement implements IStatement {
     @Override
     public IStatement deepCopy() {
         return new ForkStatement(_innerStatement.deepCopy());
+    }
+
+    @Override
+    public MyIDictionary<String, IType> typeCheck(MyIDictionary<String, IType> typeEnv) throws InterpreterException {
+        _innerStatement.typeCheck(typeEnv.deepCopy());
+        return typeEnv;
     }
 }

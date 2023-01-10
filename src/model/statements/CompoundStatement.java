@@ -1,6 +1,9 @@
 package model.statements;
 
+import model.exceptions.InterpreterException;
 import model.programState.ProgramState;
+import model.types.IType;
+import model.utility.MyIDictionary;
 
 public class CompoundStatement implements IStatement {
 
@@ -26,5 +29,10 @@ public class CompoundStatement implements IStatement {
     @Override
     public CompoundStatement deepCopy() {
         return new CompoundStatement(_first.deepCopy(), _second.deepCopy());
+    }
+
+    @Override
+    public MyIDictionary<String, IType> typeCheck(MyIDictionary<String, IType> typeEnv) throws InterpreterException {
+        return _second.typeCheck(_first.typeCheck(typeEnv));
     }
 }

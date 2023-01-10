@@ -4,6 +4,9 @@ import model.exceptions.InterpreterException;
 import model.exceptions.StatementExecutionException;
 import model.expressions.IExpression;
 import model.programState.ProgramState;
+import model.types.IType;
+import model.types.ReferenceType;
+import model.utility.MyIDictionary;
 import model.values.ReferenceValue;
 
 public class HeapWritingStatement implements IStatement {
@@ -50,5 +53,14 @@ public class HeapWritingStatement implements IStatement {
     @Override
     public IStatement deepCopy() {
         return new HeapWritingStatement(_identifier, _expression.deepCopy());
+    }
+
+    @Override
+    public MyIDictionary<String, IType> typeCheck(MyIDictionary<String, IType> typeEnv) throws InterpreterException {
+        var identifierType = typeEnv.get(_identifier);
+        var expressionType = _expression.typeCheck(typeEnv);
+        if (!identifierType.equals(new ReferenceType(expressionType)))
+            throw new InterpreterException("Expression type is different from identifier type.");
+        return typeEnv;
     }
 }

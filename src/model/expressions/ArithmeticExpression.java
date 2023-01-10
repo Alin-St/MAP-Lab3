@@ -1,9 +1,12 @@
 package model.expressions;
 
 import model.exceptions.ExpressionEvaluationException;
+import model.exceptions.InterpreterException;
 import model.programState.IHeapTable;
 import model.programState.ISymbolTable;
+import model.types.IType;
 import model.types.IntType;
+import model.utility.MyIDictionary;
 import model.values.IValue;
 import model.values.IntValue;
 
@@ -74,5 +77,14 @@ public class ArithmeticExpression implements IExpression {
     @Override
     public ArithmeticExpression deepCopy() {
         return new ArithmeticExpression(_leftOperand.deepCopy(), _rightOperand.deepCopy(), _operator);
+    }
+
+    @Override
+    public IType typeCheck(MyIDictionary<String, IType> typeEnv) throws InterpreterException {
+        if (!_leftOperand.typeCheck(typeEnv).equals(IntType.get()))
+            throw new InterpreterException("Left operand is not an integer.");
+        if (!_rightOperand.typeCheck(typeEnv).equals(IntType.get()))
+            throw new InterpreterException("Right operand is not an integer.");
+        return IntType.get();
     }
 }

@@ -4,8 +4,10 @@ import model.programState.ProgramState;
 import model.exceptions.InterpreterException;
 import model.exceptions.StatementExecutionException;
 import model.expressions.IExpression;
+import model.types.IType;
 import model.types.IntType;
 import model.types.StringType;
+import model.utility.MyIDictionary;
 import model.values.IntValue;
 import model.values.StringValue;
 
@@ -14,16 +16,16 @@ import java.io.IOException;
 public class ReadFileStatement implements IStatement {
 
     private final IExpression _fileName;
-    private final String _variableName;
+    private final String _identifier;
 
-    public ReadFileStatement(IExpression filename, String variableName) {
+    public ReadFileStatement(IExpression filename, String identifier) {
         _fileName = filename;
-        _variableName = variableName;
+        _identifier = identifier;
     }
 
     @Override
     public String toString() {
-        return "readFile(" + _fileName + ", " + _variableName + ")";
+        return "readFile(" + _fileName + ", " + _identifier + ")";
     }
 
     @Override
@@ -31,10 +33,10 @@ public class ReadFileStatement implements IStatement {
         var symbolTable = state.getSymbolTable();
         var fileTable = state.getFileTable();
 
-        if (!symbolTable.containsKey(_variableName))
+        if (!symbolTable.containsKey(_identifier))
             throw new StatementExecutionException("Variable not declared.");
 
-        if (!symbolTable.get(_variableName).getType().equals(IntType.get()))
+        if (!symbolTable.get(_identifier).getType().equals(IntType.get()))
             throw new StatementExecutionException("Variable type is not an integer.");
 
         var fnv = _fileName.evaluate(symbolTable, state.getHeapTable());
@@ -67,12 +69,21 @@ public class ReadFileStatement implements IStatement {
             }
         }
 
-        symbolTable.put(_variableName, new IntValue(value));
+        symbolTable.put(_identifier, new IntValue(value));
         return null;
     }
 
     @Override
     public IStatement deepCopy() {
-        return new ReadFileStatement(_fileName.deepCopy(), _variableName);
+        return new ReadFileStatement(_fileName.deepCopy(), _identifier);
+    }
+
+    @Override
+    public MyIDictionary<String, IType> typeCheck(MyIDictionary<String, IType> typeEnv) throws InterpreterException {
+        if (!_fileName.typeCheck(typeEnv).equals(StringType.get()))
+            throw new InterpreterException("Filename is not a string.");
+        if (!typeEnv.get(_identifier).equals(IntType.get()))
+            throw new InterpreterException("Identifier must be an integer.");
+        return typeEnv;
     }
 }

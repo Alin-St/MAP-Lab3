@@ -1,9 +1,12 @@
 package model.expressions;
 
 import model.exceptions.ExpressionEvaluationException;
+import model.exceptions.InterpreterException;
 import model.programState.IHeapTable;
 import model.programState.ISymbolTable;
 import model.types.BoolType;
+import model.types.IType;
+import model.utility.MyIDictionary;
 import model.values.BoolValue;
 import model.values.IValue;
 
@@ -53,5 +56,14 @@ public class LogicalExpression implements IExpression {
     @Override
     public LogicalExpression deepCopy() {
         return new LogicalExpression(_leftOperand.deepCopy(), _rightOperand.deepCopy(), _operator);
+    }
+
+    @Override
+    public IType typeCheck(MyIDictionary<String, IType> typeEnv) throws InterpreterException {
+        if (!_leftOperand.typeCheck(typeEnv).equals(BoolType.get()))
+            throw new InterpreterException("Left operand is not a boolean.");
+        if (!_rightOperand.typeCheck(typeEnv).equals(BoolType.get()))
+            throw new InterpreterException("Right operand is not a boolean.");
+        return BoolType.get();
     }
 }

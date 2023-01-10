@@ -1,8 +1,11 @@
 package model.expressions;
 
 import model.exceptions.ExpressionEvaluationException;
+import model.exceptions.InterpreterException;
 import model.programState.IHeapTable;
 import model.programState.ISymbolTable;
+import model.types.IType;
+import model.utility.MyIDictionary;
 import model.values.IValue;
 
 public class VariableExpression implements IExpression {
@@ -28,5 +31,10 @@ public class VariableExpression implements IExpression {
     @Override
     public VariableExpression deepCopy() {
         return this; // Class is immutable.
+    }
+
+    @Override
+    public IType typeCheck(MyIDictionary<String, IType> typeEnv) throws InterpreterException {
+        return typeEnv.get(_identifier);
     }
 }

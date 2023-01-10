@@ -1,8 +1,10 @@
 package model.statements;
 
+import model.exceptions.InterpreterException;
 import model.programState.ProgramState;
 import model.exceptions.StatementExecutionException;
 import model.types.IType;
+import model.utility.MyIDictionary;
 
 public class VariableDeclarationStatement implements IStatement {
 
@@ -32,5 +34,11 @@ public class VariableDeclarationStatement implements IStatement {
     @Override
     public VariableDeclarationStatement deepCopy() {
         return new VariableDeclarationStatement(_identifier, _type);
+    }
+
+    @Override
+    public MyIDictionary<String, IType> typeCheck(MyIDictionary<String, IType> typeEnv) throws InterpreterException {
+        typeEnv.put(_identifier, _type);
+        return typeEnv;
     }
 }

@@ -1,11 +1,10 @@
 import controller.Controller;
+import model.exceptions.InterpreterException;
 import model.expressions.*;
 import model.programState.ProgramState;
 import model.statements.*;
-import model.types.BoolType;
-import model.types.IntType;
-import model.types.ReferenceType;
-import model.types.StringType;
+import model.types.*;
+import model.utility.MyDictionary;
 import model.values.BoolValue;
 import model.values.IntValue;
 import model.values.StringValue;
@@ -17,6 +16,24 @@ import view.commands.RunExample;
 
 public class Interpreter {
 
+    static void addProgram(IStatement mainStatement, TextMenu menu, int index)
+    {
+        try {
+            mainStatement.typeCheck(new MyDictionary<>(String.class, IType.class));
+        }
+        catch (InterpreterException ex) {
+            System.out.println("Program " + index + " failed type check with the message: " + ex.getMessage());
+            System.out.println(mainStatement.toString().indent(4));
+            return;
+        }
+
+        ProgramState programState = new ProgramState(mainStatement);
+        IRepository repository = new Repository("log" + index + ".txt");
+        repository.getProgramList().add(programState);
+        Controller controller = new Controller(repository);
+        menu.addCommand(new RunExample(Integer.toString(index), mainStatement.toString(), controller));
+    }
+
     @SuppressWarnings({"DuplicatedCode", "SpellCheckingInspection"})
     public static void main(String[] args) {
 
@@ -27,10 +44,6 @@ public class Interpreter {
                         new PrintStatement(new VariableExpression("v"))
                 )
         );
-        ProgramState prg1 = new ProgramState(ex1);
-        IRepository repo1 = new Repository("log1.txt");
-        repo1.getProgramList().add(prg1);
-        Controller ctr1 = new Controller(repo1);
 
         IStatement ex2 = new CompoundStatement(
                 new VariableDeclarationStatement("a", IntType.get()),
@@ -57,10 +70,6 @@ public class Interpreter {
                         )
                 )
         );
-        ProgramState prg2 = new ProgramState(ex2);
-        IRepository repo2 = new Repository("log2.txt");
-        repo2.getProgramList().add(prg2);
-        Controller ctr2 = new Controller(repo2);
 
         IStatement ex3 = new CompoundStatement(
                 new VariableDeclarationStatement("a", BoolType.get()),
@@ -79,10 +88,6 @@ public class Interpreter {
                         )
                 )
         );
-        ProgramState prg3 = new ProgramState(ex3);
-        IRepository repo3 = new Repository("log3.txt");
-        repo3.getProgramList().add(prg3);
-        Controller ctr3 = new Controller(repo3);
 
         IStatement ex4 = new CompoundStatement(
                 new VariableDeclarationStatement("varf", StringType.get()),
@@ -109,10 +114,6 @@ public class Interpreter {
                         )
                 )
         );
-        ProgramState prg4 = new ProgramState(ex4);
-        IRepository repo4 = new Repository("log4.txt");
-        repo4.getProgramList().add(prg4);
-        Controller ctr4 = new Controller(repo4);
 
         IStatement ex5 = new CompoundStatement(
                 new CompoundStatement(
@@ -140,10 +141,6 @@ public class Interpreter {
                         ))
                 )
         );
-        ProgramState prg5 = new ProgramState(ex5);
-        IRepository repo5 = new Repository("log5.txt");
-        repo5.getProgramList().add(prg5);
-        Controller ctr5 = new Controller(repo5);
 
         IStatement ex6 = new CompoundStatement(
                 new VariableDeclarationStatement("v", IntType.get()),
@@ -169,10 +166,6 @@ public class Interpreter {
                         )
                 )
         );
-        ProgramState prg6 = new ProgramState(ex6);
-        IRepository repo6 = new Repository("log6.txt");
-        repo6.getProgramList().add(prg6);
-        Controller ctr6 = new Controller(repo6);
 
         IStatement ex7 = new CompoundStatement(
                 new VariableDeclarationStatement("v", new ReferenceType(IntType.get())),
@@ -199,10 +192,6 @@ public class Interpreter {
                         )
                 )
         );
-        ProgramState prg7 = new ProgramState(ex7);
-        IRepository repo7 = new Repository("log7.txt");
-        repo7.getProgramList().add(prg7);
-        Controller ctr7 = new Controller(repo7);
 
         IStatement ex8 = new CompoundStatement(
                 new CompoundStatement(
@@ -218,16 +207,16 @@ public class Interpreter {
                 new CompoundStatement(
                         new ForkStatement(
                                 new CompoundStatement(
+                                        new HeapWritingStatement("a",
+                                                new ValueExpression(new IntValue(30))),
                                         new CompoundStatement(
-                                                new HeapWritingStatement("a",
-                                                        new ValueExpression(new IntValue(30))),
                                                 new AssignmentStatement("v",
-                                                        new ValueExpression(new IntValue(32)))
-                                        ),
-                                        new CompoundStatement(
-                                                new PrintStatement(new VariableExpression("v")),
-                                                new PrintStatement(new HeapReadingExpression(
-                                                        new VariableExpression("a")))
+                                                        new ValueExpression(new IntValue(32))),
+                                                new CompoundStatement(
+                                                        new PrintStatement(new VariableExpression("v")),
+                                                        new PrintStatement(new HeapReadingExpression(
+                                                                new VariableExpression("a")))
+                                                )
                                         )
                                 )
                         ),
@@ -237,21 +226,58 @@ public class Interpreter {
                         )
                 )
         );
-        ProgramState prg8 = new ProgramState(ex8);
-        IRepository repo8 = new Repository("log8.txt");
-        repo8.getProgramList().add(prg8);
-        Controller ctr8 = new Controller(repo8);
+
+        IStatement ex9 = new CompoundStatement(
+                new CompoundStatement(
+                        new VariableDeclarationStatement("n", StringType.get()),
+                        new WhileStatement(
+                                new ValueExpression(new BoolValue(false)),
+                                new VariableDeclarationStatement("n", IntType.get())
+                        )
+                ),
+                new AssignmentStatement(
+                        "n",
+                        new ArithmeticExpression(
+                                new ValueExpression(new IntValue(1)),
+                                new ValueExpression(new IntValue(2)),
+                                ArithmeticOperator.ADDITION
+                        )
+                )
+        );
+
+        IStatement ex10 = new PrintStatement(
+                new LogicalExpression(
+                        new ArithmeticExpression(
+                                new ValueExpression(new IntValue(1)),
+                                new ValueExpression(new IntValue(1)),
+                                ArithmeticOperator.ADDITION
+                        ),
+                        new ValueExpression(new IntValue(1)),
+                        LogicOperator.AND
+                )
+        );
+
+        IStatement ex11 = new CompoundStatement(
+                new VariableDeclarationStatement("ptr", new ReferenceType(IntType.get())),
+                new CompoundStatement(
+                        new HeapAllocationStatement("ptr", new ValueExpression(new IntValue(10))),
+                        new HeapWritingStatement("ptr", new ValueExpression(new StringValue("11")))
+                )
+        );
 
         var menu = new TextMenu();
         menu.addCommand(new ExitCommand("0", "exit"));
-        menu.addCommand(new RunExample("1", ex1.toString(), ctr1));
-        menu.addCommand(new RunExample("2", ex2.toString(), ctr2));
-        menu.addCommand(new RunExample("3", ex3.toString(), ctr3));
-        menu.addCommand(new RunExample("4", ex4.toString(), ctr4));
-        menu.addCommand(new RunExample("5", ex5.toString(), ctr5));
-        menu.addCommand(new RunExample("6", ex6.toString(), ctr6));
-        menu.addCommand(new RunExample("7", ex7.toString(), ctr7));
-        menu.addCommand(new RunExample("8", ex8.toString(), ctr8));
+        addProgram(ex1, menu, 1);
+        addProgram(ex2, menu, 2);
+        addProgram(ex3, menu, 3);
+        addProgram(ex4, menu, 4);
+        addProgram(ex5, menu, 5);
+        addProgram(ex6, menu, 6);
+        addProgram(ex7, menu, 7);
+        addProgram(ex8, menu, 8);
+        addProgram(ex9, menu, 9);
+        addProgram(ex10, menu, 10);
+        addProgram(ex11, menu, 11);
         menu.show();
     }
 }

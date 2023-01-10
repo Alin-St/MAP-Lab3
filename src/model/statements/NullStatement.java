@@ -1,6 +1,9 @@
 package model.statements;
 
+import model.exceptions.InterpreterException;
 import model.programState.ProgramState;
+import model.types.IType;
+import model.utility.MyIDictionary;
 
 public class NullStatement implements IStatement {
 
@@ -17,5 +20,10 @@ public class NullStatement implements IStatement {
     @Override
     public NullStatement deepCopy() {
         return new NullStatement();
+    }
+
+    @Override
+    public MyIDictionary<String, IType> typeCheck(MyIDictionary<String, IType> typeEnv) throws InterpreterException {
+        return typeEnv;
     }
 }

@@ -1,7 +1,10 @@
 package model.expressions;
 
+import model.exceptions.InterpreterException;
 import model.programState.IHeapTable;
 import model.programState.ISymbolTable;
+import model.types.IType;
+import model.utility.MyIDictionary;
 import model.values.IValue;
 
 public class ValueExpression implements IExpression {
@@ -25,5 +28,10 @@ public class ValueExpression implements IExpression {
     @Override
     public ValueExpression deepCopy() {
         return new ValueExpression(_value.deepCopy());
+    }
+
+    @Override
+    public IType typeCheck(MyIDictionary<String, IType> typeEnv) throws InterpreterException {
+        return _value.getType();
     }
 }

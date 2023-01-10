@@ -5,6 +5,8 @@ import model.exceptions.InterpreterException;
 import model.exceptions.StatementExecutionException;
 import model.expressions.IExpression;
 import model.types.BoolType;
+import model.types.IType;
+import model.utility.MyIDictionary;
 import model.values.BoolValue;
 
 public class ConditionalStatement implements IStatement {
@@ -48,5 +50,14 @@ public class ConditionalStatement implements IStatement {
     @Override
     public ConditionalStatement deepCopy() {
         return new ConditionalStatement(_condition.deepCopy(), _thenStatement.deepCopy(), _elseStatement.deepCopy());
+    }
+
+    @Override
+    public MyIDictionary<String, IType> typeCheck(MyIDictionary<String, IType> typeEnv) throws InterpreterException {
+        if (!_condition.typeCheck(typeEnv).equals(BoolType.get()))
+            throw new InterpreterException("Condition is not a boolean.");
+        _thenStatement.typeCheck(typeEnv.deepCopy());
+        _condition.typeCheck(typeEnv.deepCopy());
+        return typeEnv;
     }
 }
